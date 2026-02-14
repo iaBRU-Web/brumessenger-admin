@@ -5,7 +5,118 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Brumessenger Admin</title>
     <script src="https://cdn.ably.com/lib/ably.min-1.js"></script>
-    <style>
+
+</head>
+<body>
+    <div id="loginContainer">
+        <div class="login-box">
+            <div class="login-header">
+                <h1>🔐 Admin Login</h1>
+                <p>Brumessenger Dashboard</p>
+            </div>
+
+            <div class="error-message" id="loginError"></div>
+
+            <div class="form-group">
+                <label for="adminUsername">Username</label>
+                <input type="text" id="adminUsername" placeholder="Enter admin username">
+            </div>
+            <div class="form-group">
+                <label for="adminPassword">Password</label>
+                <input type="password" id="adminPassword" placeholder="Enter admin password">
+            </div>
+            <button class="btn btn-primary" id="loginBtn">Login</button>
+        </div>
+    </div>
+
+    <div id="dashboardContainer">
+        <div class="dashboard-header">
+            <h1>📊 Brumessenger Admin Dashboard</h1>
+            <div class="header-actions">
+                <div class="admin-badge" id="adminName">Admin</div>
+                <button class="btn-logout" id="logoutBtn">Logout</button>
+            </div>
+        </div>
+
+        <div class="dashboard-content">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon users">👥</div>
+                    <div class="stat-info">
+                        <h3 id="totalUsers">0</h3>
+                        <p>Total Users</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon online">🟢</div>
+                    <div class="stat-info">
+                        <h3 id="onlineUsers">0</h3>
+                        <p>Online Now</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon messages">💬</div>
+                    <div class="stat-info">
+                        <h3 id="totalMessages">0</h3>
+                        <p>Total Messages</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon admins">⭐</div>
+                    <div class="stat-info">
+                        <h3 id="totalAdmins">0</h3>
+                        <p>Admin Users</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls">
+                <div class="search-box">
+                    <input type="text" id="userSearch" placeholder="🔍 Search users...">
+                </div>
+                <div class="filter-group">
+                    <button class="filter-btn active" data-filter="all">All</button>
+                    <button class="filter-btn" data-filter="online">Online</button>
+                    <button class="filter-btn" data-filter="offline">Offline</button>
+                    <button class="filter-btn" data-filter="admin">Admins</button>
+                </div>
+                <button class="refresh-btn" id="refreshBtn">🔄 Refresh</button>
+            </div>
+
+            <div class="users-section">
+                <div class="section-header">
+                    <h2>👥 Registered Users</h2>
+                    <span id="userCount">0 users</span>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Status</th>
+                            <th>Role</th>
+                            <th>Last Active</th>
+                            <th>Created At</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody"></tbody>
+                </table>
+            </div>
+
+            <div class="activity-section">
+                <div class="section-header">
+                    <h2>⚡ Live Activity</h2>
+                    <button class="refresh-btn" id="clearActivityBtn">Clear</button>
+                </div>
+                <div class="activity-feed" id="activityFeed">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📭</div>
+                        <p>No activity yet. Waiting for events...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+        <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
@@ -454,117 +565,6 @@
             }
         }
     </style>
-</head>
-<body>
-    <div id="loginContainer">
-        <div class="login-box">
-            <div class="login-header">
-                <h1>🔐 Admin Login</h1>
-                <p>Brumessenger Dashboard</p>
-            </div>
-
-            <div class="error-message" id="loginError"></div>
-
-            <div class="form-group">
-                <label for="adminUsername">Username</label>
-                <input type="text" id="adminUsername" placeholder="Enter admin username">
-            </div>
-            <div class="form-group">
-                <label for="adminPassword">Password</label>
-                <input type="password" id="adminPassword" placeholder="Enter admin password">
-            </div>
-            <button class="btn btn-primary" id="loginBtn">Login</button>
-        </div>
-    </div>
-
-    <div id="dashboardContainer">
-        <div class="dashboard-header">
-            <h1>📊 Brumessenger Admin Dashboard</h1>
-            <div class="header-actions">
-                <div class="admin-badge" id="adminName">Admin</div>
-                <button class="btn-logout" id="logoutBtn">Logout</button>
-            </div>
-        </div>
-
-        <div class="dashboard-content">
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon users">👥</div>
-                    <div class="stat-info">
-                        <h3 id="totalUsers">0</h3>
-                        <p>Total Users</p>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon online">🟢</div>
-                    <div class="stat-info">
-                        <h3 id="onlineUsers">0</h3>
-                        <p>Online Now</p>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon messages">💬</div>
-                    <div class="stat-info">
-                        <h3 id="totalMessages">0</h3>
-                        <p>Total Messages</p>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon admins">⭐</div>
-                    <div class="stat-info">
-                        <h3 id="totalAdmins">0</h3>
-                        <p>Admin Users</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="controls">
-                <div class="search-box">
-                    <input type="text" id="userSearch" placeholder="🔍 Search users...">
-                </div>
-                <div class="filter-group">
-                    <button class="filter-btn active" data-filter="all">All</button>
-                    <button class="filter-btn" data-filter="online">Online</button>
-                    <button class="filter-btn" data-filter="offline">Offline</button>
-                    <button class="filter-btn" data-filter="admin">Admins</button>
-                </div>
-                <button class="refresh-btn" id="refreshBtn">🔄 Refresh</button>
-            </div>
-
-            <div class="users-section">
-                <div class="section-header">
-                    <h2>👥 Registered Users</h2>
-                    <span id="userCount">0 users</span>
-                </div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Username</th>
-                            <th>Status</th>
-                            <th>Role</th>
-                            <th>Last Active</th>
-                            <th>Created At</th>
-                        </tr>
-                    </thead>
-                    <tbody id="usersTableBody"></tbody>
-                </table>
-            </div>
-
-            <div class="activity-section">
-                <div class="section-header">
-                    <h2>⚡ Live Activity</h2>
-                    <button class="refresh-btn" id="clearActivityBtn">Clear</button>
-                </div>
-                <div class="activity-feed" id="activityFeed">
-                    <div class="empty-state">
-                        <div class="empty-state-icon">📭</div>
-                        <p>No activity yet. Waiting for events...</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <script>
         const CONFIG = {
             ABLY_KEY: 'UNMYag.VcluoA:gkmv1VpeHWmrC7W0NJXRcdQZaRAJP0Z5uAj_dooMjuc',
