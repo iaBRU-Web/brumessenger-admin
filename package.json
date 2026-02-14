@@ -1,0 +1,9 @@
+{
+  "name": "brumessenger-admin",
+  "version": "1.0.0",
+  "description": "Brumessenger Admin Dashboard - Created by Ineza Aime Bruno",
+  "scripts": {
+    "start": "serve .",
+    "build": "echo 'No build needed'"
+  }
+}
