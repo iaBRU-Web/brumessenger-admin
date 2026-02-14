@@ -126,7 +126,62 @@
         }
 
         #loginContainer {
-            display: flex;
+            display: flex;<!DOCTYPE html>
+        function clearActivity() {
+            activityFeed.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📭</div><p>Activity cleared. Waiting for new events...</p></div>`;
+        }
+
+        function isUserOnline(lastActive) {
+            const now = new Date();
+            const lastActiveDate = new Date(lastActive);
+            const diffMinutes = (now - lastActiveDate) / 1000 / 60;
+            return diffMinutes < 5;
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffMinutes = Math.floor((now - date) / 1000 / 60);
+
+            if (diffMinutes < 1) return 'Just now';
+            if (diffMinutes < 60) return `${diffMinutes}m ago`;
+            
+            const diffHours = Math.floor(diffMinutes / 60);
+            if (diffHours < 24) return `${diffHours}h ago`;
+            
+            const diffDays = Math.floor(diffHours / 24);
+            if (diffDays < 7) return `${diffDays}d ago`;
+            
+            return date.toLocaleDateString();
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function showLoginError(message) {
+            loginError.textContent = message;
+            loginError.style.display = 'block';
+        }
+
+        function showLoading(btnId) {
+            const btn = document.getElementById(btnId);
+            btn.disabled = true;
+            btn.innerHTML += '<span class="spinner"></span>';
+        }
+
+        function hideLoading(btnId) {
+            const btn = document.getElementById(btnId);
+            btn.disabled = false;
+            const spinner = btn.querySelector('.spinner');
+            if (spinner) spinner.remove();
+        }
+    </script>
+</body>
+</html>
+
             justify-content: center;
             align-items: center;
             min-height: 100vh;
@@ -626,31 +681,18 @@
 
             showLoading('loginBtn');
 
-            try {
-                const response = await fetch(`${CONFIG.BACKEND_URL}/auth`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'login', username, password })
-                });
-
-                const data = await response.json();
-
-                if (response.ok && data.success) {
-                    if (!data.user.isAdmin) {
-                        showLoginError('Access denied. Admin privileges required.');
-                        hideLoading('loginBtn');
-                        return;
-                    }
-
-                    currentAdmin = data.user;
-                    localStorage.setItem('brumessenger_admin', JSON.stringify(currentAdmin));
-                    initializeDashboard();
-                } else {
-                    showLoginError(data.error || 'Login failed');
-                    hideLoading('loginBtn');
-                }
-            } catch (error) {
-                showLoginError('Connection error. Please try again.');
+            // Hardcoded admin credentials
+            if (username === 'THErealadmin' && password === 'BRUno-2026') {
+                currentAdmin = {
+                    username: 'THErealadmin',
+                    isAdmin: true,
+                    createdAt: new Date().toISOString()
+                };
+                localStorage.setItem('brumessenger_admin', JSON.stringify(currentAdmin));
+                hideLoading('loginBtn');
+                initializeDashboard();
+            } else {
+                showLoginError('Invalid username or password');
                 hideLoading('loginBtn');
             }
         }
