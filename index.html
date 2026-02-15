@@ -5,7 +5,135 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Brumessenger Admin Dashboard</title>
     <script src="https://cdn.ably.com/lib/ably.min-1.js"></script>
-    <style>
+
+</head>
+<body>
+    <div id="loginContainer">
+        <div class="login-box">
+            <div class="login-header">
+                <h1>🔐 Admin Portal</h1>
+                <p>Brumessenger Dashboard</p>
+            </div>
+
+            <div class="error-message" id="loginError"></div>
+
+            <div class="form-group">
+                <label for="adminUsername">Username</label>
+                <input type="text" id="adminUsername" placeholder="Enter admin username">
+            </div>
+            <div class="form-group">
+                <label for="adminPassword">Password</label>
+                <input type="password" id="adminPassword" placeholder="Enter admin password">
+            </div>
+            <button class="btn btn-primary" id="loginBtn">Login</button>
+        </div>
+    </div>
+
+    <div id="dashboardContainer">
+        <div class="dashboard-header">
+            <h1>📊 Admin Dashboard</h1>
+            <div class="header-actions">
+                <div class="admin-badge" id="adminName">Admin</div>
+                <button class="btn-logout" id="logoutBtn">Logout</button>
+            </div>
+        </div>
+
+        <div class="dashboard-content">
+            <div class="stats-grid">
+                <div class="stat-card users">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-value" id="totalUsers">0</div>
+                            <div class="stat-label">Total Users</div>
+                        </div>
+                        <div class="stat-icon">👥</div>
+                    </div>
+                </div>
+                <div class="stat-card online">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-value" id="onlineUsers">0</div>
+                            <div class="stat-label">Online Now</div>
+                        </div>
+                        <div class="stat-icon">🟢</div>
+                    </div>
+                </div>
+                <div class="stat-card messages">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-value" id="totalMessages">0</div>
+                            <div class="stat-label">Messages Sent</div>
+                        </div>
+                        <div class="stat-icon">💬</div>
+                    </div>
+                </div>
+                <div class="stat-card reports">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-value" id="totalReports">0</div>
+                            <div class="stat-label">User Reports</div>
+                        </div>
+                        <div class="stat-icon">🚨</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header">
+                    <h2>👥 User Management</h2>
+                    <button class="refresh-btn" id="refreshBtn">🔄 Refresh</button>
+                </div>
+
+                <div class="controls">
+                    <div class="search-box">
+                        <input type="text" id="userSearch" placeholder="🔍 Search users...">
+                    </div>
+                </div>
+
+                <div style="overflow-x: auto;">
+                    <table class="users-table">
+                        <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>Status</th>
+                                <th>Last Active</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header">
+                    <h2>💬 Live Messages</h2>
+                    <button class="refresh-btn" id="clearMessagesBtn">Clear</button>
+                </div>
+                <div class="activity-feed" id="messageFeed">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">💬</div>
+                        <p>Waiting for messages...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header">
+                    <h2>🚨 User Reports</h2>
+                    <button class="refresh-btn" id="clearReportsBtn">Clear All</button>
+                </div>
+                <div id="reportsList">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📋</div>
+                        <p>No reports yet</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+        <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
@@ -523,134 +651,6 @@
             }
         }
     </style>
-</head>
-<body>
-    <div id="loginContainer">
-        <div class="login-box">
-            <div class="login-header">
-                <h1>🔐 Admin Portal</h1>
-                <p>Brumessenger Dashboard</p>
-            </div>
-
-            <div class="error-message" id="loginError"></div>
-
-            <div class="form-group">
-                <label for="adminUsername">Username</label>
-                <input type="text" id="adminUsername" placeholder="Enter admin username">
-            </div>
-            <div class="form-group">
-                <label for="adminPassword">Password</label>
-                <input type="password" id="adminPassword" placeholder="Enter admin password">
-            </div>
-            <button class="btn btn-primary" id="loginBtn">Login</button>
-        </div>
-    </div>
-
-    <div id="dashboardContainer">
-        <div class="dashboard-header">
-            <h1>📊 Admin Dashboard</h1>
-            <div class="header-actions">
-                <div class="admin-badge" id="adminName">Admin</div>
-                <button class="btn-logout" id="logoutBtn">Logout</button>
-            </div>
-        </div>
-
-        <div class="dashboard-content">
-            <div class="stats-grid">
-                <div class="stat-card users">
-                    <div class="stat-header">
-                        <div>
-                            <div class="stat-value" id="totalUsers">0</div>
-                            <div class="stat-label">Total Users</div>
-                        </div>
-                        <div class="stat-icon">👥</div>
-                    </div>
-                </div>
-                <div class="stat-card online">
-                    <div class="stat-header">
-                        <div>
-                            <div class="stat-value" id="onlineUsers">0</div>
-                            <div class="stat-label">Online Now</div>
-                        </div>
-                        <div class="stat-icon">🟢</div>
-                    </div>
-                </div>
-                <div class="stat-card messages">
-                    <div class="stat-header">
-                        <div>
-                            <div class="stat-value" id="totalMessages">0</div>
-                            <div class="stat-label">Messages Sent</div>
-                        </div>
-                        <div class="stat-icon">💬</div>
-                    </div>
-                </div>
-                <div class="stat-card reports">
-                    <div class="stat-header">
-                        <div>
-                            <div class="stat-value" id="totalReports">0</div>
-                            <div class="stat-label">User Reports</div>
-                        </div>
-                        <div class="stat-icon">🚨</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="section">
-                <div class="section-header">
-                    <h2>👥 User Management</h2>
-                    <button class="refresh-btn" id="refreshBtn">🔄 Refresh</button>
-                </div>
-
-                <div class="controls">
-                    <div class="search-box">
-                        <input type="text" id="userSearch" placeholder="🔍 Search users...">
-                    </div>
-                </div>
-
-                <div style="overflow-x: auto;">
-                    <table class="users-table">
-                        <thead>
-                            <tr>
-                                <th>Username</th>
-                                <th>Status</th>
-                                <th>Last Active</th>
-                                <th>Created</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="usersTableBody"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="section">
-                <div class="section-header">
-                    <h2>💬 Live Messages</h2>
-                    <button class="refresh-btn" id="clearMessagesBtn">Clear</button>
-                </div>
-                <div class="activity-feed" id="messageFeed">
-                    <div class="empty-state">
-                        <div class="empty-state-icon">💬</div>
-                        <p>Waiting for messages...</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="section">
-                <div class="section-header">
-                    <h2>🚨 User Reports</h2>
-                    <button class="refresh-btn" id="clearReportsBtn">Clear All</button>
-                </div>
-                <div id="reportsList">
-                    <div class="empty-state">
-                        <div class="empty-state-icon">📋</div>
-                        <p>No reports yet</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <script>
         const CONFIG = {
             ABLY_KEY: 'UNMYag.VcluoA:gkmv1VpeHWmrC7W0NJXRcdQZaRAJP0Z5uAj_dooMjuc',
