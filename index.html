@@ -5,1073 +5,658 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Brumessenger Admin Dashboard</title>
     <script src="https://cdn.ably.com/lib/ably.min-1.js"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
 </head>
 <body>
-    <!-- Login Container -->
     <div id="loginContainer">
-        <div class="login-card">
+        <div class="login-box">
             <div class="login-header">
-                <div class="logo">
-                    <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
-                        <rect width="56" height="56" rx="14" fill="url(#adminGradient)"/>
-                        <path d="M28 18L36 22V32C36 35.866 31.52 39 28 39C24.48 39 20 35.866 20 32V22L28 18Z" fill="white"/>
-                        <circle cx="28" cy="28" r="3" fill="white"/>
-                        <defs>
-                            <linearGradient id="adminGradient" x1="0" y1="0" x2="56" y2="56">
-                                <stop stop-color="#667eea"/>
-                                <stop offset="1" stop-color="#764ba2"/>
-                            </linearGradient>
-                        </defs>
-                    </svg>
-                </div>
-                <h1>Admin Portal</h1>
+                <h1>🔐 Admin Portal</h1>
                 <p>Brumessenger Dashboard</p>
             </div>
 
-            <div class="alert alert-error" id="loginError"></div>
+            <div class="error-message" id="loginError"></div>
 
-            <div class="input-group">
-                <label for="adminUsername">Admin Username</label>
-                <input type="text" id="adminUsername" placeholder="Enter admin username" autocomplete="username">
+            <div class="form-group">
+                <label for="adminUsername">Username</label>
+                <input type="text" id="adminUsername" placeholder="Enter admin username">
             </div>
-            <div class="input-group">
+            <div class="form-group">
                 <label for="adminPassword">Password</label>
-                <input type="password" id="adminPassword" placeholder="Enter admin password" autocomplete="current-password">
+                <input type="password" id="adminPassword" placeholder="Enter admin password">
             </div>
-            <button class="btn btn-primary" id="loginBtn">
-                <span>Sign In to Dashboard</span>
-            </button>
-
-            <div class="login-footer">
-                <p>© 2024 Brumessenger Admin</p>
-            </div>
+            <button class="btn btn-primary" id="loginBtn">Login</button>
         </div>
     </div>
 
-    <!-- Dashboard Container -->
     <div id="dashboardContainer">
-        <!-- Header -->
-        <header class="dashboard-header">
-            <div class="header-content">
-                <div class="header-left">
-                    <div class="logo-small">
-                        <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-                            <rect width="40" height="40" rx="10" fill="url(#headerGradient)"/>
-                            <path d="M20 13L26 16V23C26 25.761 23.313 28 20 28C16.687 28 14 25.761 14 23V16L20 13Z" fill="white"/>
-                            <defs>
-                                <linearGradient id="headerGradient" x1="0" y1="0" x2="40" y2="40">
-                                    <stop stop-color="#667eea"/>
-                                    <stop offset="1" stop-color="#764ba2"/>
-                                </linearGradient>
-                            </defs>
-                        </svg>
-                    </div>
-                    <div>
-                        <h1>Admin Dashboard</h1>
-                        <p>Manage your Brumessenger platform</p>
+        <div class="dashboard-header">
+            <h1>📊 Admin Dashboard</h1>
+            <div class="header-actions">
+                <div class="admin-badge" id="adminName">Admin</div>
+                <button class="btn-logout" id="logoutBtn">Logout</button>
+            </div>
+        </div>
+
+        <div class="dashboard-content">
+            <div class="stats-grid">
+                <div class="stat-card users">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-value" id="totalUsers">0</div>
+                            <div class="stat-label">Total Users</div>
+                        </div>
+                        <div class="stat-icon">👥</div>
                     </div>
                 </div>
-                <div class="header-right">
-                    <div class="admin-profile">
-                        <div class="admin-avatar" id="adminAvatar">A</div>
-                        <span id="adminName">Admin</span>
+                <div class="stat-card online">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-value" id="onlineUsers">0</div>
+                            <div class="stat-label">Online Now</div>
+                        </div>
+                        <div class="stat-icon">🟢</div>
                     </div>
-                    <button class="btn-logout" id="logoutBtn">
-                        <svg width="18" height="18" viewBox="0 0 18 18" fill="currentColor">
-                            <path d="M3 3a2 2 0 012-2h4a2 2 0 012 2v1a1 1 0 11-2 0V3H5v12h4v-1a1 1 0 112 0v1a2 2 0 01-2 2H5a2 2 0 01-2-2V3z"/>
-                            <path d="M11 7.586l1.293-1.293a1 1 0 011.414 1.414L12.414 9l1.293 1.293a1 1 0 01-1.414 1.414L11 10.414l-1.293 1.293a1 1 0 01-1.414-1.414L9.586 9 8.293 7.707a1 1 0 011.414-1.414L11 7.586z"/>
-                        </svg>
-                        Logout
-                    </button>
+                </div>
+                <div class="stat-card messages">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-value" id="totalMessages">0</div>
+                            <div class="stat-label">Messages Sent</div>
+                        </div>
+                        <div class="stat-icon">💬</div>
+                    </div>
+                </div>
+                <div class="stat-card reports">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-value" id="totalReports">0</div>
+                            <div class="stat-label">User Reports</div>
+                        </div>
+                        <div class="stat-icon">🚨</div>
+                    </div>
                 </div>
             </div>
-        </header>
 
-        <!-- Main Content -->
-        <main class="dashboard-main">
-            <!-- Stats Grid -->
-            <section class="stats-section">
-                <div class="stat-card gradient-blue">
-                    <div class="stat-icon">
-                        <svg width="32" height="32" viewBox="0 0 32 32" fill="currentColor">
-                            <path d="M16 4a5 5 0 00-5 5v2H9a2 2 0 00-2 2v12a2 2 0 002 2h14a2 2 0 002-2V13a2 2 0 00-2-2h-2V9a5 5 0 00-5-5zm3 7V9a3 3 0 10-6 0v2h6z"/>
-                        </svg>
-                    </div>
-                    <div class="stat-info">
-                        <div class="stat-value" id="totalUsers">0</div>
-                        <div class="stat-label">Total Users</div>
-                    </div>
-                </div>
-
-                <div class="stat-card gradient-green">
-                    <div class="stat-icon">
-                        <svg width="32" height="32" viewBox="0 0 32 32" fill="currentColor">
-                            <circle cx="16" cy="16" r="12"/>
-                        </svg>
-                    </div>
-                    <div class="stat-info">
-                        <div class="stat-value" id="onlineUsers">0</div>
-                        <div class="stat-label">Online Now</div>
-                    </div>
-                </div>
-
-                <div class="stat-card gradient-purple">
-                    <div class="stat-icon">
-                        <svg width="32" height="32" viewBox="0 0 32 32" fill="currentColor">
-                            <path d="M8 8a2 2 0 012-2h12a2 2 0 012 2v12a2 2 0 01-2 2h-3l-4 4-4-4h-3a2 2 0 01-2-2V8z"/>
-                        </svg>
-                    </div>
-                    <div class="stat-info">
-                        <div class="stat-value" id="totalMessages">0</div>
-                        <div class="stat-label">Messages</div>
-                    </div>
-                </div>
-
-                <div class="stat-card gradient-red">
-                    <div class="stat-icon">
-                        <svg width="32" height="32" viewBox="0 0 32 32" fill="currentColor">
-                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l11.58 20.581c.75 1.333-.213 2.981-1.742 2.981H10.42c-1.53 0-2.493-1.647-1.743-2.98L8.257 3.098zM18 21a2 2 0 11-4 0 2 2 0 014 0zm-2-12a2 2 0 00-2 2v5a2 2 0 004 0v-5a2 2 0 00-2-2z"/>
-                        </svg>
-                    </div>
-                    <div class="stat-info">
-                        <div class="stat-value" id="totalReports">0</div>
-                        <div class="stat-label">Reports</div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- User Management Section -->
-            <section class="content-section">
+            <div class="section">
                 <div class="section-header">
-                    <h2>
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 4a4 4 0 100 8 4 4 0 000-8zM6 8a6 6 0 1112 0A6 6 0 016 8zM4 19a5 5 0 0110 0 1 1 0 102 0 7 7 0 00-14 0 1 1 0 102 0z"/>
-                        </svg>
-                        User Management
-                    </h2>
-                    <button class="btn-refresh" id="refreshBtn">
-                        <svg width="18" height="18" viewBox="0 0 18 18" fill="currentColor">
-                            <path d="M15.5 9a6.5 6.5 0 11-13 0 1 1 0 102 0 4.5 4.5 0 109 0 1 1 0 102 0zM9 3.5V1l2.5 2.5L9 6V3.5z"/>
-                        </svg>
-                        Refresh
-                    </button>
+                    <h2>👥 User Management</h2>
+                    <button class="refresh-btn" id="refreshBtn">🔄 Refresh</button>
                 </div>
 
-                <div class="section-controls">
+                <div class="controls">
                     <div class="search-box">
-                        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                            <path d="M8 14A6 6 0 108 2a6 6 0 000 12zM14 14l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                        </svg>
-                        <input type="text" id="userSearch" placeholder="Search users...">
+                        <input type="text" id="userSearch" placeholder="🔍 Search users...">
                     </div>
                 </div>
 
-                <div class="table-container">
-                    <table class="data-table">
+                <div style="overflow-x: auto;">
+                    <table class="users-table">
                         <thead>
                             <tr>
                                 <th>Username</th>
                                 <th>Status</th>
                                 <th>Last Active</th>
-                                <th>Joined</th>
+                                <th>Created</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody id="usersTableBody">
-                            <tr>
-                                <td colspan="5" class="loading-cell">
-                                    <div class="spinner"></div>
-                                    <span>Loading users...</span>
-                                </td>
-                            </tr>
-                        </tbody>
+                        <tbody id="usersTableBody"></tbody>
                     </table>
                 </div>
-            </section>
+            </div>
 
-            <!-- Live Activity Section -->
-            <section class="content-section">
+            <div class="section">
                 <div class="section-header">
-                    <h2>
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M8 8a2 2 0 012-2h4a2 2 0 012 2v8a2 2 0 01-2 2h-4a2 2 0 01-2-2V8zM6 10a1 1 0 011-1h1a1 1 0 110 2H7a1 1 0 01-1-1zM16 10a1 1 0 011-1h1a1 1 0 110 2h-1a1 1 0 01-1-1zM6 14a1 1 0 011-1h1a1 1 0 110 2H7a1 1 0 01-1-1zM16 14a1 1 0 011-1h1a1 1 0 110 2h-1a1 1 0 01-1-1z"/>
-                        </svg>
-                        Live Activity
-                    </h2>
-                    <button class="btn-clear" id="clearMessagesBtn">Clear</button>
+                    <h2>💬 Live Messages</h2>
+                    <button class="refresh-btn" id="clearMessagesBtn">Clear</button>
                 </div>
-
                 <div class="activity-feed" id="messageFeed">
-                    <div class="empty-feed">
-                        <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
-                            <circle cx="32" cy="32" r="30" stroke="var(--gray-300)" stroke-width="2"/>
-                            <path d="M32 20C24.268 20 18 25.373 18 32C18 34.79 19.212 37.302 21.125 39.05V44L25.05 41.4C26.6 41.9 28.3 42.2 32 42.2C39.732 42.2 46 36.827 46 30.2C46 23.573 39.732 18.2 32 18.2V20Z" fill="var(--gray-300)"/>
-                        </svg>
-                        <p>Waiting for live messages...</p>
+                    <div class="empty-state">
+                        <div class="empty-state-icon">💬</div>
+                        <p>Waiting for messages...</p>
                     </div>
                 </div>
-            </section>
+            </div>
 
-            <!-- Reports Section -->
-            <section class="content-section">
+            <div class="section">
                 <div class="section-header">
-                    <h2>
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l11.58 20.581c.75 1.333-.213 2.981-1.742 2.981H10.42c-1.53 0-2.493-1.647-1.743-2.98L8.257 3.098zM18 21a2 2 0 11-4 0 2 2 0 014 0zm-2-12a2 2 0 00-2 2v5a2 2 0 004 0v-5a2 2 0 00-2-2z"/>
-                        </svg>
-                        User Reports
-                    </h2>
-                    <button class="btn-clear" id="clearReportsBtn">Clear All</button>
+                    <h2>🚨 User Reports</h2>
+                    <button class="refresh-btn" id="clearReportsBtn">Clear All</button>
                 </div>
-
                 <div id="reportsList">
-                    <div class="empty-reports">
-                        <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
-                            <rect x="12" y="12" width="40" height="40" rx="4" stroke="var(--gray-300)" stroke-width="2"/>
-                            <path d="M24 24h16M24 32h16M24 40h10" stroke="var(--gray-300)" stroke-width="2" stroke-linecap="round"/>
-                        </svg>
-                        <p>No reports submitted yet</p>
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📋</div>
+                        <p>No reports yet</p>
                     </div>
                 </div>
-            </section>
-        </main>
+            </div>
+        </div>
     </div>
-
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --primary: #667eea;
-            --primary-dark: #5568d3;
-            --secondary: #764ba2;
-            --success: #10b981;
-            --danger: #ef4444;
-            --warning: #f59e0b;
-            --info: #3b82f6;
-            --gray-50: #f9fafb;
-            --gray-100: #f3f4f6;
-            --gray-200: #e5e7eb;
-            --gray-300: #d1d5db;
-            --gray-400: #9ca3af;
-            --gray-500: #6b7280;
-            --gray-600: #4b5563;
-            --gray-700: #374151;
-            --gray-800: #1f2937;
-            --gray-900: #111827;
-        }
+        <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0e27;
             min-height: 100vh;
-            color: var(--gray-900);
+            color: #fff;
         }
 
-        .hidden {
-            display: none !important;
-        }
-
-        /* Login Styles */
         #loginContainer {
-            min-height: 100vh;
             display: flex;
-            align-items: center;
             justify-content: center;
-            padding: 20px;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
 
-        .login-card {
-            background: white;
-            border-radius: 24px;
-            padding: 48px;
+        .login-box {
+            background: rgba(255,255,255,0.95);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            max-width: 400px;
             width: 100%;
-            max-width: 450px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            animation: slideUp 0.5s ease-out;
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
         }
 
         .login-header {
             text-align: center;
-            margin-bottom: 32px;
-        }
-
-        .logo {
-            display: inline-block;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
         }
 
         .login-header h1 {
-            font-size: 32px;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 8px;
+            color: #667eea;
+            font-size: 28px;
+            margin-bottom: 10px;
         }
 
         .login-header p {
-            color: var(--gray-600);
-            font-size: 15px;
-        }
-
-        .input-group {
-            margin-bottom: 24px;
-        }
-
-        .input-group label {
-            display: block;
+            color: #666;
             font-size: 14px;
-            font-weight: 600;
-            color: var(--gray-700);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
             margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
         }
 
-        .input-group input {
+        .form-group input {
             width: 100%;
-            padding: 14px 16px;
-            border: 2px solid var(--gray-200);
-            border-radius: 12px;
-            font-size: 15px;
-            transition: all 0.2s;
-            font-family: inherit;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
         }
 
-        .input-group input:focus {
+        .form-group input:focus {
             outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            border-color: #667eea;
         }
 
         .btn {
             width: 100%;
-            padding: 14px 24px;
+            padding: 12px;
             border: none;
-            border-radius: 12px;
-            font-size: 15px;
+            border-radius: 8px;
+            font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
-            font-family: inherit;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background: #667eea;
             color: white;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
         }
 
         .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.5);
+            background: #5568d3;
         }
 
-        .alert {
-            padding: 12px 16px;
-            border-radius: 12px;
-            margin-bottom: 24px;
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
             font-size: 14px;
             display: none;
         }
 
-        .alert-error {
-            background: #fee;
-            color: var(--danger);
-            border: 1px solid #fecaca;
-        }
-
-        .login-footer {
-            margin-top: 32px;
-            padding-top: 24px;
-            border-top: 1px solid var(--gray-200);
-            text-align: center;
-        }
-
-        .login-footer p {
-            font-size: 13px;
-            color: var(--gray-500);
-        }
-
-        /* Dashboard Styles */
         #dashboardContainer {
             display: none;
             min-height: 100vh;
-            background: var(--gray-50);
         }
 
         .dashboard-header {
-            background: white;
-            border-bottom: 1px solid var(--gray-200);
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .header-content {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 20px 32px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 25px 40px;
             display: flex;
-            align-items: center;
             justify-content: space-between;
-        }
-
-        .header-left {
-            display: flex;
             align-items: center;
-            gap: 16px;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
         }
 
-        .logo-small {
-            flex-shrink: 0;
+        .dashboard-header h1 {
+            font-size: 28px;
         }
 
-        .header-left h1 {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--gray-900);
-            margin-bottom: 4px;
-        }
-
-        .header-left p {
-            font-size: 14px;
-            color: var(--gray-600);
-        }
-
-        .header-right {
+        .header-actions {
             display: flex;
             align-items: center;
             gap: 20px;
         }
 
-        .admin-profile {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 8px 16px 8px 8px;
-            background: var(--gray-50);
-            border-radius: 12px;
-        }
-
-        .admin-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .admin-badge {
+            background: #ffd700;
+            color: #333;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 14px;
             font-weight: 600;
-            font-size: 16px;
-        }
-
-        .admin-profile span {
-            font-weight: 600;
-            color: var(--gray-900);
         }
 
         .btn-logout {
-            padding: 10px 20px;
-            border: none;
-            background: var(--danger);
+            background: rgba(255,255,255,0.2);
             color: white;
-            border-radius: 10px;
+            border: 2px solid white;
+            padding: 10px 25px;
+            border-radius: 25px;
             cursor: pointer;
             font-size: 14px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.2s;
+            transition: all 0.3s;
         }
 
         .btn-logout:hover {
-            background: #dc2626;
-            transform: translateY(-1px);
+            background: white;
+            color: #667eea;
         }
 
-        /* Main Content */
-        .dashboard-main {
-            max-width: 1400px;
+        .dashboard-content {
+            padding: 30px 40px;
+            max-width: 1600px;
             margin: 0 auto;
-            padding: 32px;
         }
 
-        /* Stats Section */
-        .stats-section {
+        .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 24px;
-            margin-bottom: 32px;
+            gap: 25px;
+            margin-bottom: 35px;
         }
 
         .stat-card {
-            background: white;
-            padding: 28px;
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-            transition: all 0.2s;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            background: linear-gradient(135deg, #1a1f3a 0%, #2a2f4a 100%);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: transform 0.3s;
         }
 
         .stat-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+            transform: translateY(-5px);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
         }
 
         .stat-icon {
-            width: 64px;
-            height: 64px;
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-
-        .gradient-blue .stat-icon {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-        }
-
-        .gradient-green .stat-icon {
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: white;
-        }
-
-        .gradient-purple .stat-icon {
-            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-            color: white;
-        }
-
-        .gradient-red .stat-icon {
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-            color: white;
-        }
-
-        .stat-info {
-            flex: 1;
+            font-size: 40px;
         }
 
         .stat-value {
-            font-size: 36px;
-            font-weight: 800;
-            color: var(--gray-900);
-            line-height: 1;
-            margin-bottom: 8px;
+            font-size: 42px;
+            font-weight: 700;
+            margin-bottom: 5px;
         }
 
         .stat-label {
+            color: #999;
             font-size: 14px;
-            font-weight: 600;
-            color: var(--gray-600);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 1px;
         }
 
-        /* Content Sections */
-        .content-section {
-            background: white;
-            border-radius: 16px;
-            padding: 32px;
-            margin-bottom: 24px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        .stat-card.users .stat-value { color: #667eea; }
+        .stat-card.online .stat-value { color: #4caf50; }
+        .stat-card.messages .stat-value { color: #ff9800; }
+        .stat-card.reports .stat-value { color: #f44336; }
+
+        .section {
+            background: linear-gradient(135deg, #1a1f3a 0%, #2a2f4a 100%);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            margin-bottom: 30px;
+            border: 1px solid rgba(255,255,255,0.1);
         }
 
         .section-header {
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            margin-bottom: 24px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid var(--gray-100);
+            align-items: center;
+            margin-bottom: 25px;
         }
 
         .section-header h2 {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--gray-900);
+            font-size: 24px;
+        }
+
+        .controls {
             display: flex;
-            align-items: center;
-            gap: 12px;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
         }
 
-        .section-header svg {
-            color: var(--primary);
+        .search-box input {
+            padding: 12px 20px;
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 10px;
+            color: white;
+            font-size: 14px;
+            min-width: 300px;
         }
 
-        .btn-refresh,
-        .btn-clear {
-            padding: 10px 20px;
+        .search-box input::placeholder {
+            color: rgba(255,255,255,0.5);
+        }
+
+        .refresh-btn {
+            padding: 12px 25px;
+            background: #667eea;
+            color: white;
             border: none;
-            background: var(--gray-100);
-            color: var(--gray-700);
             border-radius: 10px;
             cursor: pointer;
             font-size: 14px;
             font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.2s;
+            transition: all 0.3s;
         }
 
-        .btn-refresh:hover,
-        .btn-clear:hover {
-            background: var(--gray-200);
+        .refresh-btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
         }
 
-        .section-controls {
-            margin-bottom: 24px;
-        }
-
-        .search-box {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 16px;
-            background: var(--gray-50);
-            border: 2px solid var(--gray-200);
-            border-radius: 12px;
-            max-width: 400px;
-        }
-
-        .search-box svg {
-            color: var(--gray-400);
-            flex-shrink: 0;
-        }
-
-        .search-box input {
-            flex: 1;
-            border: none;
-            background: transparent;
-            font-size: 14px;
-            font-family: inherit;
-            outline: none;
-            color: var(--gray-900);
-        }
-
-        /* Table */
-        .table-container {
-            overflow-x: auto;
-            border-radius: 12px;
-            border: 1px solid var(--gray-200);
-        }
-
-        .data-table {
+        .users-table {
             width: 100%;
-            border-collapse: collapse;
+            border-collapse: separate;
+            border-spacing: 0 10px;
         }
 
-        .data-table thead {
-            background: var(--gray-50);
+        .users-table thead tr {
+            background: rgba(255,255,255,0.05);
         }
 
-        .data-table th {
-            padding: 16px;
+        .users-table th {
+            padding: 15px 20px;
             text-align: left;
-            font-size: 13px;
-            font-weight: 700;
-            color: var(--gray-700);
+            color: #999;
+            font-weight: 600;
+            font-size: 12px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            border-bottom: 2px solid var(--gray-200);
         }
 
-        .data-table td {
-            padding: 16px;
-            border-bottom: 1px solid var(--gray-200);
-            font-size: 14px;
-            color: var(--gray-900);
+        .users-table tbody tr {
+            background: rgba(255,255,255,0.05);
+            transition: all 0.3s;
         }
 
-        .data-table tbody tr:last-child td {
-            border-bottom: none;
+        .users-table tbody tr:hover {
+            background: rgba(102, 126, 234, 0.2);
+            transform: translateX(5px);
         }
 
-        .data-table tbody tr:hover {
-            background: var(--gray-50);
+        .users-table td {
+            padding: 18px 20px;
         }
 
         .status-badge {
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            padding: 6px 12px;
+            gap: 8px;
+            padding: 6px 15px;
             border-radius: 20px;
             font-size: 12px;
             font-weight: 600;
         }
 
         .status-badge.online {
-            background: #d1fae5;
-            color: var(--success);
-        }
-
-        .status-badge.online::before {
-            content: '';
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--success);
+            background: rgba(76, 175, 80, 0.2);
+            color: #4caf50;
         }
 
         .status-badge.offline {
-            background: var(--gray-100);
-            color: var(--gray-600);
-        }
-
-        .status-badge.offline::before {
-            content: '';
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--gray-400);
+            background: rgba(198, 40, 40, 0.2);
+            color: #f44336;
         }
 
         .btn-delete {
-            padding: 8px 16px;
-            border: none;
-            background: var(--danger);
+            background: #f44336;
             color: white;
+            border: none;
+            padding: 8px 15px;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
-            transition: all 0.2s;
+            transition: all 0.3s;
         }
 
-        .btn-delete:hover:not(:disabled) {
-            background: #dc2626;
+        .btn-delete:hover {
+            background: #d32f2f;
+            transform: scale(1.05);
         }
 
         .btn-delete:disabled {
-            opacity: 0.5;
+            background: #666;
             cursor: not-allowed;
         }
 
-        .loading-cell {
-            text-align: center;
-            padding: 60px 20px !important;
-            color: var(--gray-500);
-        }
-
-        .loading-cell .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid var(--gray-200);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin: 0 auto 16px;
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        /* Activity Feed */
         .activity-feed {
-            min-height: 300px;
             max-height: 500px;
             overflow-y: auto;
         }
 
-        .empty-feed,
-        .empty-reports {
-            text-align: center;
-            padding: 60px 20px;
-            color: var(--gray-500);
-        }
-
-        .empty-feed svg,
-        .empty-reports svg {
-            margin-bottom: 16px;
-        }
-
-        .empty-feed p,
-        .empty-reports p {
-            font-size: 14px;
-        }
-
         .activity-item {
-            padding: 16px;
-            border-bottom: 1px solid var(--gray-200);
-            display: flex;
-            gap: 16px;
-            align-items: start;
-            animation: slideIn 0.3s ease-out;
+            padding: 15px 20px;
+            background: rgba(255,255,255,0.05);
+            margin-bottom: 12px;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+            animation: slideIn 0.3s ease;
         }
 
         @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateX(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
         }
 
-        .activity-item:last-child {
-            border-bottom: none;
+        .activity-item.message {
+            border-left-color: #2196f3;
         }
 
-        .activity-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            flex-shrink: 0;
-        }
-
-        .activity-content {
-            flex: 1;
-        }
-
-        .activity-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-        }
-
-        .activity-users {
-            font-weight: 600;
-            color: var(--gray-900);
+        .activity-item.report {
+            border-left-color: #f44336;
         }
 
         .activity-time {
-            font-size: 12px;
-            color: var(--gray-500);
+            font-size: 11px;
+            color: #999;
+            margin-bottom: 5px;
         }
 
-        .activity-message {
+        .activity-text {
+            color: #fff;
             font-size: 14px;
-            color: var(--gray-700);
             line-height: 1.5;
         }
 
-        /* Reports */
+        .activity-user {
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .activity-message {
+            color: #ccc;
+            font-style: italic;
+            margin-top: 5px;
+            padding: 10px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+        }
+
         .report-card {
-            background: var(--gray-50);
-            border: 1px solid var(--gray-200);
-            border-radius: 12px;
+            background: rgba(244, 67, 54, 0.1);
+            border: 2px solid rgba(244, 67, 54, 0.3);
             padding: 20px;
-            margin-bottom: 16px;
+            border-radius: 12px;
+            margin-bottom: 15px;
         }
 
         .report-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 16px;
-            padding-bottom: 16px;
-            border-bottom: 1px solid var(--gray-200);
+            margin-bottom: 15px;
         }
 
         .report-title {
-            font-weight: 700;
             font-size: 16px;
-            color: var(--danger);
+            font-weight: 600;
+            color: #f44336;
         }
 
         .report-time {
-            font-size: 13px;
-            color: var(--gray-500);
+            font-size: 12px;
+            color: #999;
         }
 
         .report-details {
-            display: grid;
-            gap: 12px;
-            margin-bottom: 16px;
+            margin-bottom: 15px;
         }
 
         .report-label {
+            color: #999;
             font-size: 12px;
-            font-weight: 600;
-            color: var(--gray-600);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            margin-bottom: 5px;
         }
 
         .report-value {
+            color: #fff;
             font-size: 14px;
-            color: var(--gray-900);
-            font-weight: 500;
+            margin-bottom: 10px;
         }
 
         .report-reason {
-            font-size: 14px;
-            color: var(--gray-700);
-            background: white;
+            background: rgba(0,0,0,0.3);
             padding: 12px;
             border-radius: 8px;
+            color: #fff;
+            line-height: 1.5;
         }
 
         .report-conversation {
-            background: white;
+            background: rgba(0,0,0,0.3);
             padding: 12px;
             border-radius: 8px;
             max-height: 200px;
             overflow-y: auto;
+            margin-top: 10px;
         }
 
         .report-message {
             padding: 8px;
             margin-bottom: 8px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 6px;
             font-size: 13px;
-            line-height: 1.5;
-        }
-
-        .report-message:last-child {
-            margin-bottom: 0;
-        }
-
-        .report-message strong {
-            color: var(--primary);
         }
 
         .report-actions {
             display: flex;
-            gap: 12px;
-            padding-top: 16px;
-            border-top: 1px solid var(--gray-200);
+            gap: 10px;
+        }
+
+        .report-actions button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
         }
 
         .btn-delete-reported {
-            flex: 1;
-            padding: 10px 20px;
-            border: none;
-            background: var(--danger);
+            background: #f44336;
             color: white;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-            transition: all 0.2s;
-        }
-
-        .btn-delete-reported:hover {
-            background: #dc2626;
         }
 
         .btn-dismiss {
-            flex: 1;
-            padding: 10px 20px;
-            border: none;
-            background: var(--gray-200);
-            color: var(--gray-700);
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-            transition: all 0.2s;
+            background: #666;
+            color: white;
         }
 
-        .btn-dismiss:hover {
-            background: var(--gray-300);
+        .empty-state {
+            text-align: center;
+            padding: 50px;
+            color: #666;
         }
 
-        /* Scrollbar */
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
         ::-webkit-scrollbar {
             width: 10px;
-            height: 10px;
         }
 
         ::-webkit-scrollbar-track {
-            background: var(--gray-100);
+            background: rgba(255,255,255,0.05);
         }
 
         ::-webkit-scrollbar-thumb {
-            background: var(--gray-300);
+            background: rgba(102, 126, 234, 0.5);
             border-radius: 5px;
         }
 
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--gray-400);
+        .hidden {
+            display: none !important;
         }
 
-        /* Responsive */
         @media (max-width: 768px) {
-            .header-content {
-                padding: 16px 20px;
+            .dashboard-header {
                 flex-direction: column;
-                gap: 16px;
-                align-items: flex-start;
+                gap: 15px;
             }
-
-            .dashboard-main {
+            .dashboard-content {
                 padding: 20px;
             }
-
-            .stats-section {
+            .stats-grid {
                 grid-template-columns: 1fr;
-            }
-
-            .content-section {
-                padding: 20px;
-            }
-
-            .table-container {
-                overflow-x: scroll;
             }
         }
     </style>
-
     <script>
-        // Configuration
         const CONFIG = {
-            BACKEND_URL: 'https://brumessenger-backend.vercel.app',
-            ABLY_KEY: 'EeU4mg.kC4Btg:oDj1OYeJdAuFNKOI2-Hh4uBMZs8fQi4N_QzE63Z_8n0'
+            ABLY_KEY: 'UNMYag.VcluoA:gkmv1VpeHWmrC7W0NJXRcdQZaRAJP0Z5uAj_dooMjuc',
+            BACKEND_URL: 'https://brumessenger-backend.vercel.app/api'
         };
 
-        // Global State
         let currentAdmin = null;
         let ablyClient = null;
         let allUsers = [];
@@ -1079,212 +664,120 @@
         let reportCount = 0;
         let reports = [];
 
-        // Initialize
-        window.addEventListener('DOMContentLoaded', () => {
-            setupEventListeners();
-        });
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedAdmin = localStorage.getItem('brumessenger_admin');
+            if (savedAdmin) {
+                currentAdmin = JSON.parse(savedAdmin);
+                initializeDashboard();
+            }
 
-        function setupEventListeners() {
-            // Login
             document.getElementById('loginBtn').addEventListener('click', handleLogin);
+            document.getElementById('logoutBtn').addEventListener('click', handleLogout);
+            document.getElementById('refreshBtn').addEventListener('click', loadUsers);
+            document.getElementById('clearMessagesBtn').addEventListener('click', clearMessages);
+            document.getElementById('clearReportsBtn').addEventListener('click', clearReports);
+            document.getElementById('userSearch').addEventListener('input', handleSearch);
+
             document.getElementById('adminPassword').addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') handleLogin();
             });
+        });
 
-            // Logout
-            document.getElementById('logoutBtn').addEventListener('click', handleLogout);
-
-            // Refresh
-            document.getElementById('refreshBtn').addEventListener('click', loadUsers);
-
-            // Search
-            document.getElementById('userSearch').addEventListener('input', handleSearch);
-
-            // Clear buttons
-            document.getElementById('clearMessagesBtn').addEventListener('click', clearMessages);
-            document.getElementById('clearReportsBtn').addEventListener('click', clearReports);
-        }
-
-        async function handleLogin() {
+        function handleLogin() {
             const username = document.getElementById('adminUsername').value.trim();
             const password = document.getElementById('adminPassword').value;
 
             if (!username || !password) {
-                showLoginError('Please enter both username and password');
+                showLoginError('Please enter username and password');
                 return;
             }
 
-            const btn = document.getElementById('loginBtn');
-            btn.disabled = true;
-            btn.innerHTML = '<div class="spinner" style="width: 20px; height: 20px; border-width: 2px;"></div>';
-
-            try {
-                const response = await fetch(`${CONFIG.BACKEND_URL}/auth`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'login', username, password })
-                });
-
-                const data = await response.json();
-
-                if (data.success && data.user.isAdmin) {
-                    currentAdmin = data.user;
-                    loginSuccess(currentAdmin);
-                } else if (data.success && !data.user.isAdmin) {
-                    showLoginError('Access denied. Admin privileges required.');
-                } else {
-                    showLoginError(data.error || 'Login failed');
-                }
-            } catch (error) {
-                console.error('Login error:', error);
-                showLoginError('Connection error. Please try again.');
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = '<span>Sign In to Dashboard</span>';
+            if (username === 'THErealadmin' && password === 'BRUno-2026') {
+                currentAdmin = {
+                    username: 'THErealadmin',
+                    isAdmin: true,
+                    createdAt: new Date().toISOString()
+                };
+                localStorage.setItem('brumessenger_admin', JSON.stringify(currentAdmin));
+                initializeDashboard();
+            } else {
+                showLoginError('Invalid credentials');
             }
-        }
-
-        function loginSuccess(admin) {
-            // Initialize Ably
-            ablyClient = new Ably.Realtime(CONFIG.ABLY_KEY);
-
-            // Update UI
-            document.getElementById('loginContainer').style.display = 'none';
-            document.getElementById('dashboardContainer').style.display = 'block';
-            document.getElementById('adminName').textContent = admin.username;
-            document.getElementById('adminAvatar').textContent = admin.username.charAt(0).toUpperCase();
-
-            // Load data
-            loadUsers();
-            subscribeToActivity();
         }
 
         function handleLogout() {
-            if (!confirm('Are you sure you want to logout?')) return;
-
-            if (ablyClient) {
-                ablyClient.close();
-            }
-
+            if (ablyClient) ablyClient.close();
+            localStorage.removeItem('brumessenger_admin');
             currentAdmin = null;
-            allUsers = [];
-            messageCount = 0;
-            reportCount = 0;
-            reports = [];
-
             document.getElementById('dashboardContainer').style.display = 'none';
             document.getElementById('loginContainer').style.display = 'flex';
             document.getElementById('adminUsername').value = '';
             document.getElementById('adminPassword').value = '';
         }
 
-        async function loadUsers() {
-            try {
-                const response = await fetch(`${CONFIG.BACKEND_URL}/get-users`);
-                const data = await response.json();
+        async function initializeDashboard() {
+            document.getElementById('loginContainer').style.display = 'none';
+            document.getElementById('dashboardContainer').style.display = 'block';
+            document.getElementById('adminName').textContent = currentAdmin.username;
 
-                if (data.success) {
-                    allUsers = data.users;
-                    displayUsers(allUsers);
-                    updateStats();
-                }
-            } catch (error) {
-                console.error('Error loading users:', error);
-            }
+            ablyClient = new Ably.Realtime(CONFIG.ABLY_KEY);
+
+            startMessageMonitoring();
+            startReportMonitoring();
+
+            await loadUsers();
+            setInterval(() => loadUsers(), 30000);
         }
 
-        function displayUsers(users) {
-            const tbody = document.getElementById('usersTableBody');
-            tbody.innerHTML = '';
-
-            if (users.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="5" class="loading-cell">No users found</td>
-                    </tr>
-                `;
-                return;
-            }
-
-            users.forEach(user => {
-                const isOnline = isUserOnline(user.lastActive);
-                const row = document.createElement('tr');
-                
-                row.innerHTML = `
-                    <td><strong>${escapeHtml(user.username)}</strong></td>
-                    <td>
-                        <span class="status-badge ${isOnline ? 'online' : 'offline'}">
-                            ${isOnline ? 'Online' : 'Offline'}
-                        </span>
-                    </td>
-                    <td>${formatDate(user.lastActive)}</td>
-                    <td>${formatDate(user.createdAt)}</td>
-                    <td>
-                        <button class="btn-delete" 
-                                onclick="deleteUser('${escapeHtml(user.username)}')"
-                                ${user.isAdmin ? 'disabled' : ''}>
-                            🗑️ Delete
-                        </button>
-                    </td>
-                `;
-
-                tbody.appendChild(row);
-            });
-        }
-
-        function subscribeToActivity() {
-            // Subscribe to all message channels for monitoring
-            const messageChannel = ablyClient.channels.get('[?rewind=1]brumessenger-*');
-            messageChannel.subscribe('private-message', (message) => {
-                const msg = message.data;
+        function startMessageMonitoring() {
+            const channel = ablyClient.channels.get('[?rewind=100]*');
+            
+            channel.subscribe('private-message', (message) => {
                 messageCount++;
                 updateStats();
-                addActivityMessage(msg);
+                addMessageToFeed(message.data);
             });
+        }
 
-            // Subscribe to admin reports
-            const reportsChannel = ablyClient.channels.get('admin-reports');
-            reportsChannel.subscribe('user-report', (message) => {
-                const report = message.data;
-                reports.unshift(report);
+        function startReportMonitoring() {
+            const channel = ablyClient.channels.get('admin-reports');
+            
+            channel.subscribe('user-report', (message) => {
                 reportCount++;
+                reports.unshift(message.data);
                 updateStats();
                 displayReports();
             });
         }
 
-        function addActivityMessage(msg) {
+        function addMessageToFeed(data) {
             const feed = document.getElementById('messageFeed');
-            
-            // Remove empty state if exists
-            const emptyState = feed.querySelector('.empty-feed');
-            if (emptyState) {
-                emptyState.remove();
-            }
+            const emptyState = feed.querySelector('.empty-state');
+            if (emptyState) emptyState.remove();
 
-            const time = new Date(msg.timestamp).toLocaleTimeString('en-US', {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'activity-item message';
+
+            const time = new Date(data.timestamp).toLocaleTimeString('en-US', {
                 hour: '2-digit',
-                minute: '2-digit'
+                minute: '2-digit',
+                second: '2-digit'
             });
 
-            const activityDiv = document.createElement('div');
-            activityDiv.className = 'activity-item';
-            activityDiv.innerHTML = `
-                <div class="activity-avatar">${msg.from.charAt(0).toUpperCase()}</div>
-                <div class="activity-content">
-                    <div class="activity-header">
-                        <div class="activity-users">
-                            <strong>${escapeHtml(msg.from)}</strong> → <strong>${escapeHtml(msg.to)}</strong>
-                        </div>
-                        <div class="activity-time">${time}</div>
-                    </div>
-                    <div class="activity-message">${escapeHtml(msg.text)}</div>
+            const preview = data.text.length > 100 ? data.text.substring(0, 100) + '...' : data.text;
+
+            messageDiv.innerHTML = `
+                <div class="activity-time">${time}</div>
+                <div class="activity-text">
+                    <span class="activity-user">${escapeHtml(data.from)}</span>
+                    → 
+                    <span class="activity-user">${escapeHtml(data.to)}</span>
                 </div>
+                <div class="activity-message">"${escapeHtml(preview)}"</div>
             `;
 
-            feed.insertBefore(activityDiv, feed.firstChild);
+            feed.insertBefore(messageDiv, feed.firstChild);
 
-            // Keep only last 50 messages
             while (feed.children.length > 50) {
                 feed.removeChild(feed.lastChild);
             }
@@ -1296,12 +789,9 @@
 
             if (reports.length === 0) {
                 reportsList.innerHTML = `
-                    <div class="empty-reports">
-                        <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
-                            <rect x="12" y="12" width="40" height="40" rx="4" stroke="var(--gray-300)" stroke-width="2"/>
-                            <path d="M24 24h16M24 32h16M24 40h10" stroke="var(--gray-300)" stroke-width="2" stroke-linecap="round"/>
-                        </svg>
-                        <p>No reports submitted yet</p>
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📋</div>
+                        <p>No reports yet</p>
                     </div>
                 `;
                 return;
@@ -1326,7 +816,7 @@
                         <div class="report-label">Reason:</div>
                         <div class="report-reason">${escapeHtml(report.reason)}</div>
                         ${report.conversation && report.conversation.length > 0 ? `
-                            <div class="report-label">Conversation (${report.conversation.length} messages):</div>
+                            <div class="report-label" style="margin-top: 10px;">Conversation (${report.conversation.length} messages):</div>
                             <div class="report-conversation">
                                 ${report.conversation.map(msg => `
                                     <div class="report-message">
@@ -1350,19 +840,7 @@
             });
         }
 
-        function deleteUser(username) {
-            if (!confirm(`Delete user "${username}"?\n\nThis will remove their account permanently.`)) {
-                return;
-            }
-
-            alert(`User "${username}" marked for deletion.\n\nNote: Actual deletion requires backend API.\nUser will reappear on refresh.`);
-            
-            allUsers = allUsers.filter(u => u.username !== username);
-            displayUsers(allUsers);
-            updateStats();
-        }
-
-        function deleteReportedUser(username) {
+        async function deleteReportedUser(username) {
             if (!confirm(`Are you sure you want to delete user "${username}"?\n\nThis action cannot be undone.`)) {
                 return;
             }
@@ -1381,6 +859,69 @@
                 updateStats();
                 displayReports();
             }
+        }
+
+        async function loadUsers() {
+            try {
+                const response = await fetch(`${CONFIG.BACKEND_URL}/get-users`);
+                const data = await response.json();
+
+                if (data.success) {
+                    allUsers = data.users;
+                    displayUsers(allUsers);
+                    updateStats();
+                }
+            } catch (error) {
+                console.error('Error loading users:', error);
+            }
+        }
+
+        function displayUsers(users) {
+            const tbody = document.getElementById('usersTableBody');
+            tbody.innerHTML = '';
+
+            if (users.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 40px; color: #666;">No users found</td></tr>';
+                return;
+            }
+
+            users.forEach(user => {
+                const isOnline = isUserOnline(user.lastActive);
+                const statusClass = isOnline ? 'online' : 'offline';
+                const statusText = isOnline ? 'Online' : 'Offline';
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><strong>${escapeHtml(user.username)}</strong></td>
+                    <td>
+                        <span class="status-badge ${statusClass}">
+                            ${statusText}
+                        </span>
+                    </td>
+                    <td>${formatDate(user.lastActive)}</td>
+                    <td>${formatDate(user.createdAt)}</td>
+                    <td>
+                        <button class="btn-delete" onclick="deleteUser('${escapeHtml(user.username)}')" 
+                                ${user.isAdmin ? 'disabled' : ''}>
+                            🗑️ Delete
+                        </button>
+                    </td>
+                `;
+
+                tbody.appendChild(row);
+            });
+        }
+
+        async function deleteUser(username) {
+            if (!confirm(`Delete user "${username}"?\n\nThis will remove their account permanently.`)) {
+                return;
+            }
+
+            alert(`User "${username}" marked for deletion.\n\nNote: Actual deletion requires backend API.\nUser will reappear on refresh.`);
+            
+            allUsers = allUsers.filter(u => u.username !== username);
+            displayUsers(allUsers);
+            updateStats();
         }
 
         function updateStats() {
@@ -1402,11 +943,8 @@
 
         function clearMessages() {
             document.getElementById('messageFeed').innerHTML = `
-                <div class="empty-feed">
-                    <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
-                        <circle cx="32" cy="32" r="30" stroke="var(--gray-300)" stroke-width="2"/>
-                        <path d="M32 20C24.268 20 18 25.373 18 32C18 34.79 19.212 37.302 21.125 39.05V44L25.05 41.4C26.6 41.9 28.3 42.2 32 42.2C39.732 42.2 46 36.827 46 30.2C46 23.573 39.732 18.2 32 18.2V20Z" fill="var(--gray-300)"/>
-                    </svg>
+                <div class="empty-state">
+                    <div class="empty-state-icon">💬</div>
                     <p>Message feed cleared</p>
                 </div>
             `;
@@ -1455,8 +993,8 @@
             const error = document.getElementById('loginError');
             error.textContent = message;
             error.style.display = 'block';
-            setTimeout(() => error.style.display = 'none', 5000);
         }
     </script>
 </body>
 </html>
+Displaying index.html.
